@@ -30,9 +30,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Consol
 .loader-sub{font-size:.58rem;letter-spacing:.22em;color:var(--muted);}
 
 nav{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--white);position:relative;z-index:10;box-shadow:0 2px 10px rgba(0,74,173,.35);}
+.nav-left{display:flex;align-items:center;gap:16px;}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:.88rem;letter-spacing:.25em;color:var(--blue);text-decoration:none;}
 .nav-logo b{color:var(--teal);}
 .nav-logo img{width:128px;height:45px;border-radius:6px;}
+.sidebar-toggle{width:30px;height:30px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);color:var(--blue);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,color .2s,border-color .2s;flex-shrink:0;}
+.sidebar-toggle:hover{background:var(--blue-lt);border-color:var(--blue);}
+.sidebar-toggle svg{width:15px;height:15px;transition:transform .3s ease;}
+.sidebar-toggle.collapsed svg{transform:rotate(180deg);}
 .nav-right{display:flex;align-items:center;gap:20px;}
 .nav-right a{font-size:.56rem;letter-spacing:.18em;color:var(--blue);text-decoration:none;transition:color .2s;}
 .nav-right a:hover{color:var(--teal);}
@@ -54,12 +59,6 @@ nav{height:54px;display:flex;align-items:center;justify-content:space-between;pa
 .sidebar::-webkit-scrollbar{width:5px;}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px;}
 .app.sidebar-collapsed .sidebar{min-width:0;width:0;opacity:0;pointer-events:none;}
-
-.sidebar-toggle{position:absolute;top:50%;left:326px;transform:translate(-50%,-50%);z-index:25;width:24px;height:48px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);color:var(--blue);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-sm);font-size:.7rem;transition:left .3s ease,background .2s,color .2s;user-select:none;}
-.sidebar-toggle:hover{background:var(--blue-lt);border-color:var(--blue);}
-.app.sidebar-collapsed .sidebar-toggle{left:0;}
-.sidebar-toggle svg{width:11px;height:11px;transition:transform .3s ease;}
-.app.sidebar-collapsed .sidebar-toggle svg{transform:rotate(180deg);}
 
 .ctrl-block{padding:16px;border-bottom:1px solid var(--border);}
 .field-label{font-size:.5rem;letter-spacing:.26em;color:var(--blue);display:block;margin-bottom:5px;}
@@ -184,7 +183,12 @@ nav{height:54px;display:flex;align-items:center;justify-content:space-between;pa
 </div>
 
 <nav>
-  <a href="/" class="nav-logo"><img src="/static/logo.png" alt="Nextop logo"></a>
+  <div class="nav-left">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+    </button>
+    <a href="/" class="nav-logo"><img src="/static/logo.png" alt="Nextop logo"></a>
+  </div>
   <div class="nav-right">
     <div class="nav-pip">
       <span class="pip" id="pip"></span>
@@ -195,9 +199,6 @@ nav{height:54px;display:flex;align-items:center;justify-content:space-between;pa
 </nav>
 
 <div class="app" id="appLayout">
-  <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg>
-  </button>
   <div class="sidebar">
     <div class="ctrl-block">
       <label class="field-label" for="routeSelect">Route</label>
@@ -804,9 +805,11 @@ function setPip(state) {
 }
 function toggleSidebar() {
   const app = document.getElementById('appLayout');
+  const btn = document.getElementById('sidebarToggle');
   app.classList.toggle('sidebar-collapsed');
   const collapsed = app.classList.contains('sidebar-collapsed');
-  document.getElementById('sidebarToggle').setAttribute('title', collapsed ? 'Show sidebar' : 'Hide sidebar');
+  btn.classList.toggle('collapsed', collapsed);
+  btn.setAttribute('title', collapsed ? 'Show sidebar' : 'Hide sidebar');
   setTimeout(() => { if (map) map.invalidateSize(); }, 320);
 }
 function setReadout(lat, lng) {
